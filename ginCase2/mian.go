@@ -34,12 +34,12 @@ func main() {
 		c.JSON(200, user1)
 	})
 	res.GET("/jsonp", func(c *gin.Context) {
-		user1 := userList{
+		user := userList{
 			Title:   "jsonp",
 			Desc:    "jsonp",
 			Content: "jsonp-content",
 		}
-		c.JSONP(200, user1)
+		c.JSONP(200, user)
 	})
 	err := res.Run(":8000")
 	if err != nil {
