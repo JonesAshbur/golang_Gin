@@ -1,6 +1,9 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 type userList struct {
 	Title   string `json:"title"`
@@ -10,6 +13,8 @@ type userList struct {
 
 func main() {
 	res := gin.Default()
+	//配置模板文件
+	res.LoadHTMLGlob("views/*")
 	res.GET("/", func(c *gin.Context) {
 		c.String(200, "value：%v", "Hello Gin")
 	})
@@ -40,6 +45,22 @@ func main() {
 			Content: "jsonp-content",
 		}
 		c.JSONP(200, user)
+	})
+	res.GET("/xml", func(c *gin.Context) {
+		c.XML(http.StatusOK, gin.H{
+			"success": true,
+			"msg":     "xml content",
+		})
+	})
+	res.GET("/news", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "news.html", gin.H{
+			"title": "后台news数据",
+		})
+	})
+	res.GET("/goods", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "goods.html", gin.H{
+			"title": "后台goods数据",
+		})
 	})
 	err := res.Run(":8000")
 	if err != nil {
