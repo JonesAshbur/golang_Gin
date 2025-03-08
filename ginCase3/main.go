@@ -18,7 +18,7 @@ func main() {
 		c.HTML(http.StatusOK, "default/index.html", gin.H{
 			"title":    "默认首页",
 			"score":    89,
-			"hobby":    []string{"eat", "drink", "play"},
+			"hobby":    []string{"eat", "drink", "play football"},
 			"testList": []string{},
 			"list": &Article{
 				Title:   "新闻标题",
