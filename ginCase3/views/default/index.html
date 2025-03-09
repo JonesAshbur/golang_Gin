@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/static/css/base.css">
 </head>
 <body>
-    <h1>{{.title}}</h1>
+{{template "public/pageHeader.html" .}}
+    <h2>{{.title}}</h2>
     {{$t := .title }}
     <p>{{$t}}</p>
 <!--条件判断-->
@@ -50,6 +52,9 @@
         <p>{{.Title}}</p>
         <p>{{.Content}}</p>
     {{end}}
+
+    <p>{{len .title}}</p>
+    <p>{{UnixToTime .date}}</p>
 </body>
 </html>
 {{end}}

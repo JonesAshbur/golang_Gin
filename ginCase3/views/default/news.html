@@ -6,9 +6,10 @@
     <title>Title</title>
 </head>
 <body>
-<h1>{{.title}}</h1>
-<h1>{{.news.Title}}</h1>
-<h1>{{.news.Content}}</h1>
+{{template "public/pageHeader.html" .}}
+<p>{{.title}}</p>
+<p>{{.news.Title}}</h1>
+<p>{{.news.Content}}</p>
 </body>
 </html>
 {{end}}
