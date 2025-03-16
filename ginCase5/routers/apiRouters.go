@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"golang_Gin/ginCase4/controllers/api"
+	"golang_Gin/ginCase5/controllers/api"
 )
 
 func ApiRoutersInit(r *gin.Engine) {
