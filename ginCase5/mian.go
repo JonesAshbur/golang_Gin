@@ -22,7 +22,8 @@ func main() {
 	routers.AdminRoutersInit(r)
 	routers.ApiRoutersInit(r)
 
-	err := r.Run(":8000")
+	//80端口访问时直接访问localhost，无需加端口号
+	err := r.Run(":80")
 	if err != nil {
 		return
 	}
