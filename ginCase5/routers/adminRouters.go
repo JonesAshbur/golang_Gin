@@ -1,9 +1,10 @@
 package routers
 
 import (
-	"github.com/gin-gonic/gin"
 	"golang_Gin/ginCase5/controllers/admin"
 	"golang_Gin/ginCase5/middleWares"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AdminRoutersInit(r *gin.Engine) {
@@ -15,6 +16,7 @@ func AdminRoutersInit(r *gin.Engine) {
 		adminRouters.GET("/user", (&admin.UserController{}).Index)
 		adminRouters.GET("/user/add", (&admin.UserController{}).Add)
 		adminRouters.GET("/user/edit", (&admin.UserController{}).Edit)
+		adminRouters.GET("/user/delete", (&admin.UserController{}).Delete)
 		adminRouters.POST("/user/doUpload", (&admin.UserController{}).DoUpload)
 		adminRouters.POST("/user/doMultipleUpload", (&admin.UserController{}).DoMultipleUpload)
 		adminRouters.GET("/article", (&admin.ArticleController{}).Index)

@@ -2,12 +2,12 @@ package models
 
 type User struct { //default table name is users
 	Id       int
-	UserName string
+	UserName string `gorm:"column:username"`
 	Age      int
 	Email    string
 	AddTime  int
 }
 
-func (User) TableName() string {
+func (user User) TableName() string {
 	return "user"
 }

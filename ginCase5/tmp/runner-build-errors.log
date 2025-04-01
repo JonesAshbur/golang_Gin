@@ -1,2 +1,0 @@
-# golang_Gin/ginCase5/controllers/home
-controllers\home\defaultController.go:16:11: invalid field name "maxAge" in struct literal

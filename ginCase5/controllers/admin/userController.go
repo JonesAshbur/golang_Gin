@@ -1,10 +1,14 @@
 package admin
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"golang_Gin/ginCase5/models"
 	"log"
 	"net/http"
 	"path"
+	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
@@ -12,17 +16,77 @@ type UserController struct {
 }
 
 func (con *UserController) Index(c *gin.Context) {
-	c.String(200, "user list")
-	con.Success(c)
+	userList := []models.User{}
+	models.DB.Where("age > 18").Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
 }
 
 func (con *UserController) Add(c *gin.Context) {
 	//c.String(200, "add user")
-	c.HTML(200, "admin/userAdd.html", gin.H{})
+	user := models.User{
+		UserName: "ashbur",
+		Age:      23,
+		Email:    "ashbur@163.com",
+		AddTime:  int(time.Now().Unix()),
+	}
+	err := models.DB.Create(&user).Error
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println("user:", user)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "update user success",
+		"data":    user,
+	})
 }
 
 func (con *UserController) Edit(c *gin.Context) {
-	c.String(200, "edit user")
+	// 更新用户所有信息
+	// user := models.User{Id: 3}
+	// models.DB.Find(&user)
+	// fmt.Println("user id=3:", user)
+	// user.UserName = "new user name"
+	// user.Age = 00
+	// user.Email = "new email"
+	// user.AddTime = int(time.Now().Unix())
+	// err := models.DB.Save(&user).Error
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
+
+	// 更新用户部分信息(单例，多列)
+
+	// 直接修改
+	// user := models.User{}
+	// models.DB.Model(&user).Where("id = ?", 2).Update("username", "new name")
+
+	// 获取，修改，保存
+	user := models.User{}
+	models.DB.Where("id = ?", 2).Find(&user)
+	user.UserName = "name"
+	models.DB.Save(&user)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "update user info success",
+		"data":    user,
+	})
+}
+
+func (con *UserController) Delete(c *gin.Context) {
+	// 删除一条数据
+	user := models.User{}
+	models.DB.Where("id = ?", 2).Delete(&user)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "delete user success",
+	})
+
+	// 指定条件删除数据
+	models.DB.Where("username = ?", "new user name").Delete(&user)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "delete user success",
+	})
 }
 
 // 单文件上传
@@ -51,7 +115,7 @@ func (con *UserController) DoMultipleUpload(c *gin.Context) {
 	username := c.PostForm("username")
 
 	form, _ := c.MultipartForm()
-	files, _ := form.File["face[]"]
+	files := form.File["face[]"]
 
 	for _, file := range files {
 		dst := path.Join("./static/upload", file.Filename)
