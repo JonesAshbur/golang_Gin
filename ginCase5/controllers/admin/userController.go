@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type UserController struct {
@@ -21,6 +22,122 @@ func (con *UserController) Index(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data":    userList,
+	})
+
+	// 指定条件查询
+	userList = []models.User{}
+	models.DB.Where("age > ? AND age < ?", 18, 23).Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// 指定条件查询id在1-3之间的
+	userList = []models.User{}
+	models.DB.Where("id BETWEEN ? AND ?", 1, 3).Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// 指定条件查询 id在1，3，5中的数据
+	userList = []models.User{}
+	models.DB.Where("id IN (?)", []int{1, 3, 5}).Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// 模糊查询
+	userList = []models.User{}
+	models.DB.Where("username LIKE ?", "%ashbur").Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// 查询id=1或2的数据
+	userList = []models.User{}
+	models.DB.Where("id = ? OR id = ?", 1, 2).Find(&userList)
+	// models.DB.Where("id = ? ", 1).Or("id = ?", 2).Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// 使用slect返回指定字段
+	userList = []models.User{}
+	models.DB.Select("id, username, age").Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// order排序
+	userList = []models.User{}
+	// 按年龄降序，id升序,取前10条
+	models.DB.Order("age desc").Order("id asc").Limit(10).Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// offset分页
+	userList = []models.User{}
+	// 从第10条开始，取10条
+	models.DB.Offset(10).Limit(10).Find(&userList)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    userList,
+	})
+
+	// count统计
+	var count int64
+	models.DB.Where("age > 18").Count(&count)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"count":   count,
+	})
+
+	// 原生sql
+	var result []models.User
+	models.DB.Raw("SELECT * FROM user WHERE age > ?", 18).Scan(&result)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    result,
+	})
+
+	// 增删改查使用Exec（执行SQL），获取数据使用Raw结合Scan
+
+	// 原生sql统计数量
+	var count2 int64
+	models.DB.Raw("SELECT COUNT(*) FROM user WHERE age > ?", 18).Scan(&count2)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"count":   count2,
+	})
+
+	// benlogs to关联查询,一对一查询
+	var result2 []models.User
+	models.DB.Preload("User").Find(&result2)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    result2,
+	})
+
+	// 如果不知道外键，可以使用gorm重写外键： `gorm:"foreignKey:CompanyRefer"`
+
+	// 一对多查询，Has many
+
+	// 多对多查询 many to many
+
+	// 预加载SQL，设置preload第二个参数为func
+	models.DB.Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Order("id desc")
+	}).Find(&result2)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    result2,
 	})
 }
 
@@ -84,6 +201,12 @@ func (con *UserController) Delete(c *gin.Context) {
 
 	// 指定条件删除数据
 	models.DB.Where("username = ?", "new user name").Delete(&user)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "delete user success",
+	})
+
+	// 原生sql删除
+	models.DB.Exec("DELETE FROM user WHERE username = ?", "new user name")
 	c.JSON(http.StatusOK, gin.H{
 		"message": "delete user success",
 	})
